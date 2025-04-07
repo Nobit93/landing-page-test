@@ -23,7 +23,8 @@ const HeroSection = () => {
     setIsDragging(true);
   };
 
-  const handleTouchStart = (_e: React.TouchEvent) => {
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
     setIsDragging(true);
   };
 
