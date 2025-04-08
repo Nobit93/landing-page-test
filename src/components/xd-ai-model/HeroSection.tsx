@@ -1,32 +1,42 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import UploadContainer from './UploadContainer';
 
 const HeroSection: React.FC = () => {
-  // State for the selected option
-  const options = ['Female', 'Male', 'Children', 'Silver'];
-  const [selectedOption, setSelectedOption] = useState(options[0]);
-  const [prevOption, setPrevOption] = useState(options[0]); // 记录前一个选项
+  // Use useMemo for options array
+  const options = useMemo(() => ['Female', 'Male', 'Children', 'Silver'] as const, []);
+  
+  // Define a specific type for the options
+  type Option = typeof options[number]; 
+
+  const [selectedOption, setSelectedOption] = useState<Option>(options[0]);
+  const [prevOption, setPrevOption] = useState<Option>(options[0]);
   const [isAutoplayActive, setIsAutoplayActive] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false); // 控制新图片滑入动画
-  const [isTransitioning, setIsTransitioning] = useState(false); // 整体过渡状态控制
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const transitionTimerRef = useRef<NodeJS.Timeout | null>(null); // 用于追踪过渡动画计时器
+  const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
   const hasImagesLoaded = useRef(false);
 
-  // Map options to their background images - 使用PNG图片（确保路径正确）
-  const backgroundImages: { [key: string]: string } = {
+  // Define type for backgroundImages keys
+  type BackgroundImageKeys = Option | 'Default';
+
+  // Use useMemo for backgroundImages object with explicit type
+  const backgroundImages = useMemo(() => ({
     Female: '/images/ai-model/hero-banner-female.png',
     Male: '/images/ai-model/hero-banner-male.png',
     Children: '/images/ai-model/hero-banner-children.png',
     Silver: '/images/ai-model/hero-banner-silver.png',
     Default: '/images/ai-model/hero-bg.png'
-  };
+  } as Record<BackgroundImageKeys, string>), []);
 
-  // Map options to their background colors
-  const backgroundColors: { [key: string]: string } = {
+  // Define type for backgroundColors keys
+  type BackgroundColorKeys = Option | 'Default';
+  
+  // Define backgroundColors with explicit type
+  const backgroundColors: Record<BackgroundColorKeys, string> = {
     Female: '#D3D5DC',
     Male: '#C3977A',
     Children: '#F8F4F3',
@@ -39,6 +49,7 @@ const HeroSection: React.FC = () => {
     if (hasImagesLoaded.current) return;
     
     const preloadImages = async () => {
+      // Now mapping over Option type is safe
       const imageSources = options.map(option => backgroundImages[option]);
       
       const loadPromises = imageSources.map(src => {
@@ -59,34 +70,31 @@ const HeroSection: React.FC = () => {
         });
       });
       
-      // 等待所有图片加载完成
       await Promise.all(loadPromises);
       setIsAutoplayActive(true);
       hasImagesLoaded.current = true;
     };
     
     preloadImages();
+
   }, [backgroundImages, options]);
 
   // 处理过渡的函数
-  const handleTransition = React.useCallback((currentOption: string, nextOption: string) => {
+  const handleTransition = React.useCallback((currentOption: Option, nextOption: Option) => {
     if (isTransitioning || currentOption === nextOption) return;
     
-    // 设置过渡状态并开始动画
     setIsTransitioning(true);
     setPrevOption(currentOption);
     
-    // 延迟200ms后切换到新图片并开始滑入动画
     transitionTimerRef.current = setTimeout(() => {
       setSelectedOption(nextOption);
       setIsAnimating(true);
       
-      // 滑入动画完成后重置状态
       transitionTimerRef.current = setTimeout(() => {
         setIsAnimating(false);
         setIsTransitioning(false);
-      }, 700); // 滑入动画持续时间
-    }, 200); // 淡出动画持续时间
+      }, 700);
+    }, 200);
   }, [isTransitioning]);
 
   // 自动播放定时器
@@ -95,13 +103,13 @@ const HeroSection: React.FC = () => {
       if (timerRef.current) clearInterval(timerRef.current);
       
       timerRef.current = setInterval(() => {
-        // 如果已经在过渡中，不要触发新的过渡
         if (isTransitioning) return;
         
-        handleTransition(
-          selectedOption,
-          options[(options.indexOf(selectedOption) + 1) % options.length]
-        );
+        const currentSelected = selectedOption;
+        // Use type assertion if necessary, but indexOf should work with Option type
+        const nextIndex = (options.indexOf(currentSelected) + 1) % options.length;
+        handleTransition(currentSelected, options[nextIndex]);
+
       }, 3000);
     } else {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -110,10 +118,10 @@ const HeroSection: React.FC = () => {
     return () => { 
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isAutoplayActive, selectedOption, isTransitioning, handleTransition, options]);
+  }, [isAutoplayActive, isTransitioning, handleTransition, options, selectedOption]);
 
   // 按钮点击处理
-  const handleOptionClick = (option: string) => {
+  const handleOptionClick = (option: Option) => {
     if (timerRef.current) clearInterval(timerRef.current);
     setIsAutoplayActive(false);
     
@@ -133,6 +141,7 @@ const HeroSection: React.FC = () => {
   return (
     <section 
       className="absolute top-0 left-0 right-0 z-10 transition-colors duration-500 ease-in-out"
+      // Accessing backgroundColors with Option type is now safe
       style={{ backgroundColor: backgroundColors[selectedOption] || backgroundColors.Default }}
     >
       <div className="relative flex min-h-[740px] max-w-[1280px] mx-auto w-full overflow-hidden">
@@ -142,6 +151,7 @@ const HeroSection: React.FC = () => {
           <div className="absolute inset-0 z-0">
             <Image
               key={`active-${selectedOption}`}
+              // Accessing backgroundImages with Option type is now safe
               src={backgroundImages[selectedOption]}
               alt={`${selectedOption} Fashion Model`}
               fill
@@ -156,6 +166,7 @@ const HeroSection: React.FC = () => {
             <div className="absolute inset-0 z-10 animate-fade-out">
               <Image
                 key={`fading-${prevOption}`}
+                // Accessing backgroundImages with Option type is now safe
                 src={backgroundImages[prevOption]}
                 alt={`${prevOption} Fashion Model`}
                 fill
@@ -181,7 +192,7 @@ const HeroSection: React.FC = () => {
                 <button
                   key={option}
                   onClick={() => handleOptionClick(option)}
-                  disabled={isTransitioning} // 过渡期间禁用按钮
+                  disabled={isTransitioning}
                   className={`px-4 py-2 text-xl leading-[1.5] rounded-lg border transition-colors duration-200
                     ${selectedOption === option
                       ? 'bg-[#101727] text-white font-bold border-transparent shadow-md'

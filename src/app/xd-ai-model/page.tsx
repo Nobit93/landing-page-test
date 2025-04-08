@@ -7,7 +7,7 @@ import RetailModelsSection from '@/components/xd-ai-model/RetailModelsSection';
 import MoreScenariosSection from '@/components/xd-ai-model/MoreScenariosSection';
 import FAQSection from '@/components/xd-ai-model/FAQSection';
 import Footer from '@/components/xd-ai-model/Footer';
-// import CTASection from '@/components/xd-ai-model/CTASection';
+import CTASection from '@/components/xd-ai-model/CTASection';
 
 export default function XDAiModelPage() {
   return (
@@ -20,7 +20,7 @@ export default function XDAiModelPage() {
           <RetailModelsSection />
           <MoreScenariosSection />
           <FAQSection />
-          {/* <CTASection /> */}
+          <CTASection />
         </div>
         <Footer />
     </main>
