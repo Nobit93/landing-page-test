@@ -39,7 +39,6 @@ const HeroSection: React.FC = () => {
     if (hasImagesLoaded.current) return;
     
     const preloadImages = async () => {
-      let loadedCount = 0;
       const imageSources = options.map(option => backgroundImages[option]);
       
       const loadPromises = imageSources.map(src => {
@@ -49,7 +48,7 @@ const HeroSection: React.FC = () => {
             return;
           }
           
-          const img = new Image();
+          const img = new window.Image();
           img.src = src;
           
           img.onload = () => resolve();
@@ -67,7 +66,28 @@ const HeroSection: React.FC = () => {
     };
     
     preloadImages();
-  }, []);
+  }, [backgroundImages, options]);
+
+  // 处理过渡的函数
+  const handleTransition = React.useCallback((currentOption: string, nextOption: string) => {
+    if (isTransitioning || currentOption === nextOption) return;
+    
+    // 设置过渡状态并开始动画
+    setIsTransitioning(true);
+    setPrevOption(currentOption);
+    
+    // 延迟200ms后切换到新图片并开始滑入动画
+    transitionTimerRef.current = setTimeout(() => {
+      setSelectedOption(nextOption);
+      setIsAnimating(true);
+      
+      // 滑入动画完成后重置状态
+      transitionTimerRef.current = setTimeout(() => {
+        setIsAnimating(false);
+        setIsTransitioning(false);
+      }, 700); // 滑入动画持续时间
+    }, 200); // 淡出动画持续时间
+  }, [isTransitioning]);
 
   // 自动播放定时器
   useEffect(() => {
@@ -90,28 +110,7 @@ const HeroSection: React.FC = () => {
     return () => { 
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isAutoplayActive, selectedOption, isTransitioning]);
-
-  // 处理过渡的函数
-  const handleTransition = (currentOption: string, nextOption: string) => {
-    if (isTransitioning || currentOption === nextOption) return;
-    
-    // 设置过渡状态并开始动画
-    setIsTransitioning(true);
-    setPrevOption(currentOption);
-    
-    // 延迟200ms后切换到新图片并开始滑入动画
-    transitionTimerRef.current = setTimeout(() => {
-      setSelectedOption(nextOption);
-      setIsAnimating(true);
-      
-      // 滑入动画完成后重置状态
-      transitionTimerRef.current = setTimeout(() => {
-        setIsAnimating(false);
-        setIsTransitioning(false);
-      }, 700); // 滑入动画持续时间
-    }, 200); // 淡出动画持续时间
-  };
+  }, [isAutoplayActive, selectedOption, isTransitioning, handleTransition, options]);
 
   // 按钮点击处理
   const handleOptionClick = (option: string) => {
@@ -172,7 +171,7 @@ const HeroSection: React.FC = () => {
             <div className="flex flex-col items-center gap-3 text-center text-white">
               <h1 className="text-[52px] font-bold leading-[1.23] [text-shadow:_0_2px_4px_rgb(0_0_0_/_40%)]">AI Fashion Model</h1>
               <p className="text-base leading-[1.375] [text-shadow:_0_1px_3px_rgb(0_0_0_/_40%)]">
-                Remove backgrounds from photos and make your subject stand out with X-Design's one-click background eraser
+                Remove backgrounds from photos and make your subject stand out with X-Design&apos;s one-click background eraser
               </p>
             </div>
 
@@ -187,7 +186,7 @@ const HeroSection: React.FC = () => {
                     ${selectedOption === option
                       ? 'bg-[#101727] text-white font-bold border-transparent shadow-md'
                       : 'bg-white bg-opacity-90 text-[#16171A] font-normal border-[#D2D5DC] hover:bg-opacity-100 hover:border-gray-400'
-                    } `}
+                    } ${isTransitioning ? 'cursor-wait opacity-80' : 'cursor-pointer'}`}
                 >
                   {option}
                 </button>

@@ -1,5 +1,6 @@
+"use client";
+
 import React from 'react';
-import Image from 'next/image'; // Assuming you might use an Image component later
 
 // Basic Logo placeholder. Replace with actual SVG structure or Image component later.
 const Logo: React.FC<{ className?: string }> = ({ className }) => {
