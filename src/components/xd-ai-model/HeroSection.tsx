@@ -132,10 +132,10 @@ const HeroSection: React.FC = () => {
 
   return (
     <section 
-      className="relative transition-colors duration-500 ease-in-out" 
+      className="absolute top-0 left-0 right-0 z-10 transition-colors duration-500 ease-in-out"
       style={{ backgroundColor: backgroundColors[selectedOption] || backgroundColors.Default }}
     >
-      <div className="relative flex h-[740px] max-w-[1280px] mx-auto w-full overflow-hidden">
+      <div className="relative flex min-h-[740px] max-w-[1280px] mx-auto w-full overflow-hidden">
         {/* Left Side with Image Area */}
         <div className="relative w-3/5 flex-shrink-0 overflow-hidden">
           {/* 当前活跃图片 */}
@@ -186,7 +186,7 @@ const HeroSection: React.FC = () => {
                     ${selectedOption === option
                       ? 'bg-[#101727] text-white font-bold border-transparent shadow-md'
                       : 'bg-white bg-opacity-90 text-[#16171A] font-normal border-[#D2D5DC] hover:bg-opacity-100 hover:border-gray-400'
-                    } ${isTransitioning ? 'cursor-wait opacity-80' : 'cursor-pointer'}`}
+                    } `}
                 >
                   {option}
                 </button>

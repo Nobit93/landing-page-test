@@ -11,15 +11,17 @@ import Footer from '@/components/xd-ai-model/Footer';
 
 export default function XDAiModelPage() {
   return (
-    <main className="flex min-h-screen flex-col justify-between">
+    <main className="relative flex min-h-screen flex-col justify-between">
         <Header />
         <HeroSection />
-        <FeaturesSection />
-        <WhyChooseSection />
-        <RetailModelsSection />
-        <MoreScenariosSection />
-        <FAQSection />
-        {/* <CTASection /> */}
+        <div className="mt-[740px]">
+          <FeaturesSection />
+          <WhyChooseSection />
+          <RetailModelsSection />
+          <MoreScenariosSection />
+          <FAQSection />
+          {/* <CTASection /> */}
+        </div>
         <Footer />
     </main>
   );
