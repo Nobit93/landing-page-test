@@ -13,6 +13,8 @@ const config: Config = {
       fontFamily: {
         // 确保访问路径正确
         sans: ['var(--font-poppins)', ...defaultTheme.fontFamily.sans],
+        poppins: ["var(--font-poppins)"],
+        inter: ["var(--font-inter)"],
       },
        colors: {
          // 从 Figma 设计稿中提取的颜色
