@@ -12,24 +12,36 @@ interface FAQItemProps {
 
 const FAQItem: React.FC<FAQItemProps> = ({ question, answer, isOpen, onClick }) => {
   return (
-    <div className={`border-t border-[#EBEDF2] ${isOpen ? '' : 'pt-8'}`}>
-      <div className={`flex justify-between items-start gap-6 cursor-pointer ${isOpen ? 'pt-8' : ''}`} onClick={onClick}>
+    <div className="border-t border-[#EBEDF2] overflow-hidden">
+      <div
+        className="flex justify-between items-center gap-6 cursor-pointer py-6"
+        onClick={onClick}
+      >
         <span className="flex-1 text-xl font-bold text-[#374151] leading-[1.5]">
           {question}
         </span>
-        <Image 
-          src={isOpen ? '/xd-ai-model/faq-chevron-up.svg' : '/xd-ai-model/faq-chevron-down.svg'} 
-          alt={isOpen ? 'Collapse' : 'Expand'} 
-          width={24} 
-          height={24} 
-          className="mt-1" // Adjust vertical alignment if needed
-        />
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 36 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={`w-5 h-5 text-[#6B7280] transition-transform duration-300 ease-in-out ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+        >
+          <path d="M0.585786 0.585786C1.36683 -0.195262 2.63317 -0.195262 3.41421 0.585786L18 15.1716L32.5858 0.585786C33.3668 -0.195262 34.6332 -0.195262 35.4142 0.585786C36.1953 1.36683 36.1953 2.63317 35.4142 3.41421L20.8284 18C19.2663 19.5621 16.7337 19.5621 15.1716 18L0.585786 3.41421C-0.195262 2.63317 -0.195262 1.36683 0.585786 0.585786Z" fill="currentColor"/>
+        </svg>
       </div>
-      {isOpen && (
-        <p className="mt-6 text-base text-[#6B7280] leading-[1.375]">
+      <div
+        className={`transition-[max-height,opacity] duration-500 ease-in-out ${
+          isOpen ? 'max-h-[1000px] opacity-100 pb-6' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <p className="text-base text-[#6B7280] leading-[1.375]">
           {answer}
         </p>
-      )}
+      </div>
     </div>
   );
 };
@@ -81,7 +93,7 @@ const FAQSection: React.FC = () => {
         <h2 className="text-4xl font-bold text-[#374151] leading-[1.23] w-full md:w-1/3">
           Frequently Asked Questions
         </h2>
-        <div className="flex flex-col gap-8 w-full md:w-2/3">
+        <div className="flex flex-col w-full md:w-2/3">
           {faqs.map((faq, index) => (
             <FAQItem
               key={index}
